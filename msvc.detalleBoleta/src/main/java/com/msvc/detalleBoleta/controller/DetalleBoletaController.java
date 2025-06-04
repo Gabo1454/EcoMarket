@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/detalles")
+@RequestMapping("/api/v1/detalleBoleta")
 public class  DetalleBoletaController {
 
     @Autowired
@@ -47,4 +47,6 @@ public class  DetalleBoletaController {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+
 }

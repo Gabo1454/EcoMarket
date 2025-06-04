@@ -1,57 +1,51 @@
-package com.msvc.cliente.services;
+package com.msvc.cliente.controller;
 
-import com.msvc.cliente.exception.ClienteException;
 import com.msvc.cliente.models.entities.Cliente;
-import com.msvc.cliente.repositories.ClienteRepository;
+import com.msvc.cliente.services.ClienteService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Service
-public class ClienteServiceImpl implements ClienteService {
+@RestController
+@RequestMapping("/api/v1/clientes")
+@Validated
+public class ClienteController {
 
     @Autowired
-    private ClienteRepository clienteRepository;
+    private ClienteService clienteService;
 
-    // Obtener todos los clientes
-    @Override
-    public List<Cliente> findAll() {
-        return this.clienteRepository.findAll();
+    @GetMapping
+    public ResponseEntity<List<Cliente>> findAll() {
+        return ResponseEntity.ok(clienteService.findAll());
     }
 
-    // Buscar cliente por ID
-    @Override
-    public Cliente findById(Long id) {
-        return this.clienteRepository.findById(id)
-                .orElseThrow(() -> new ClienteException("Cliente no encontrado en la base de datos"));
+    @GetMapping("/{id}")
+    public ResponseEntity<Cliente> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(clienteService.findById(id));
     }
 
-    // Guardar nuevo cliente
-    @Override
-    public Cliente save(Cliente cliente) {
-        return this.clienteRepository.save(cliente);
+    @PostMapping
+    public ResponseEntity<Cliente> save(@Valid @RequestBody Cliente cliente) {
+        Cliente creado = clienteService.save(cliente);
+        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
     }
 
-    // Actualizar cliente existente
-    @Override
-    public Cliente update(Long id, Cliente cliente) {
-        Cliente existente = this.clienteRepository.findById(id)
-                .orElseThrow(() -> new ClienteException("No se puede actualizar. Cliente con ID " + id + " no existe."));
-
-        // Actualiza los campos necesarios
-        existente.setNombre(cliente.getNombre());
-        // Agrega más campos si tu entidad Cliente tiene otros atributos (correo, teléfono, etc.)
-
-        return this.clienteRepository.save(existente);
+    @PutMapping("/{id}")
+    public ResponseEntity<Cliente> update(
+            @PathVariable Long id,
+            @Valid @RequestBody Cliente cliente) {
+        Cliente actualizado = clienteService.update(id, cliente);
+        return ResponseEntity.ok(actualizado);
     }
 
-    // Eliminar cliente por ID
-    @Override
-    public void deleteById(Long id) {
-        if (!clienteRepository.existsById(id)) {
-            throw new ClienteException("No se puede eliminar. Cliente con ID " + id + " no existe.");
-        }
-        clienteRepository.deleteById(id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        clienteService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

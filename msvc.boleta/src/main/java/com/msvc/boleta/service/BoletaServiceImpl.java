@@ -1,5 +1,8 @@
 package com.msvc.boleta.service;
 
+import com.msvc.boleta.client.DetalleBoletaClient;
+import com.msvc.boleta.dto.BoletaConDetalleDTO;
+import com.msvc.boleta.dto.DetalleBoletaDTO;
 import com.msvc.boleta.exception.BoletaException;
 import com.msvc.boleta.models.entities.Boleta;
 import com.msvc.boleta.repositories.BoletaRepository;
@@ -13,6 +16,10 @@ public class BoletaServiceImpl implements BoletaService {
 
     @Autowired
     private BoletaRepository boletaRepository;
+
+    //Inyectamos Feign Client
+    @Autowired
+    private DetalleBoletaClient detalleClient;
 
     @Override
     public List<Boleta> findAll() {
@@ -35,5 +42,17 @@ public class BoletaServiceImpl implements BoletaService {
         boletaRepository.deleteById(id);
     }
 
+    @Override
+    public BoletaConDetalleDTO getCompleteBoleta(Long id) {
+
+        Boleta boleta = findById(id);
+
+        List<DetalleBoletaDTO> detalles = detalleClient.findByBoletaId(id);
+
+        BoletaConDetalleDTO result = new BoletaConDetalleDTO();
+        result.setBoleta(boleta);
+        result.setDetalles(detalles);
+        return result;
+    }
 
 }

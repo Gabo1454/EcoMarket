@@ -5,7 +5,7 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "ventas")
@@ -22,7 +22,7 @@ public class Venta {
 
     @NotNull(message = "La fecha de la venta es obligatoria")
     @Column(nullable = false)
-    private LocalDateTime fechaVenta = LocalDateTime.now();
+    private LocalDate fechaVenta = LocalDate.now();
 
     @NotNull(message = "El total de la venta es obligatorio")
     @DecimalMin(value = "0.0", inclusive = false, message = "El total debe ser mayor a 0")

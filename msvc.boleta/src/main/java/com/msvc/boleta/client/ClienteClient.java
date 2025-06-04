@@ -5,9 +5,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "msvc-cliente", url = "http://localhost:8002") // Usa el puerto real de msvc.cliente
+@FeignClient(name = "msvc-cliente", url = "http://localhost:8081") // o solo name si usas Eureka
 public interface ClienteClient {
 
-    @GetMapping("/clientes/{id}")
-    Cliente obtenerClientePorId(@PathVariable("id") Long id);
+    @GetMapping("/api/clientes/{id}")
+    Cliente obtenerClientePorId(@PathVariable Long id);
 }

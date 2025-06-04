@@ -35,8 +35,16 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> update(@PathVariable Long id, @Valid @RequestBody Producto producto) {
+    public ResponseEntity<Producto> updateByIdPath(@PathVariable Long id, @Valid @RequestBody Producto producto) {
         return ResponseEntity.ok(productoService.update(id, producto));
+    }
+
+    @PutMapping
+    public ResponseEntity<Producto> updateByBody(@Valid @RequestBody Producto producto) {
+        if (producto.getIdProducto() == null) {
+            return ResponseEntity.badRequest().build(); // 400 si no hay ID en el body
+        }
+        return ResponseEntity.ok(productoService.update(producto.getIdProducto(), producto));
     }
 
     @DeleteMapping("/{id}")

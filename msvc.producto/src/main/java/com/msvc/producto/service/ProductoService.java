@@ -39,12 +39,9 @@ public class ProductoService {
         return productoRepository.save(existingProducto);
     }
 
-    public boolean delete(Long id) {
+    public void delete(Long id) {
         Producto producto = findById(id);
-        if (producto == null) {
-            return false;
-        }
         productoRepository.delete(producto);
-        return true;
+
     }
 }

@@ -1,6 +1,7 @@
 package com.msvc.boleta.controller;
 
 import com.msvc.boleta.client.ClienteService;
+import com.msvc.boleta.dto.BoletaConDetalleDTO;
 import com.msvc.boleta.models.entities.Boleta;
 import com.msvc.boleta.service.BoletaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/boletas") // Puedes ajustar este path base si es necesario
+@RequestMapping("/api/v1/boletas") // Puedes ajustar este path base si es necesario
 public class BoletaController {
 
-    // 👇 Inyectamos el ClienteService
     private final ClienteService clienteService;
 
     @Autowired
@@ -55,4 +55,9 @@ public class BoletaController {
     }
 
 
+    @GetMapping("/{id}/complete")
+    public ResponseEntity<BoletaConDetalleDTO> getCompleteBoleta(@PathVariable Long id) {
+        BoletaConDetalleDTO dto = boletaService.getCompleteBoleta(id);
+        return ResponseEntity.ok(dto);
+    }
 }
