@@ -17,4 +17,4 @@ public class Main {
 //VALIDAR LA INFORMACION
 //Update debe tener crud
 //Delete en cascada
-//Git obligatorio
+//Git obligatorio✅
