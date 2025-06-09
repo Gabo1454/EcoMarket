@@ -11,3 +11,10 @@ public class Main {
         SpringApplication.run(Main.class, args);
     }
 }
+
+//Comunicacion entre microservicios
+//CRED
+//VALIDAR LA INFORMACION
+//Update debe tener crud
+//Delete en cascada
+//Git obligatorio
