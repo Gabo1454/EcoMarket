@@ -1,4 +1,4 @@
-package com.msvc.producto.service;
+package com.msvc.producto.services;
 
 import com.msvc.producto.models.entities.Producto;
 import com.msvc.producto.repositories.ProductoRepository;

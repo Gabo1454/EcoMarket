@@ -1,7 +1,7 @@
 package com.msvc.cliente.controller;
 
 import com.msvc.cliente.models.entities.Cliente;
-import com.msvc.cliente.services.ClienteService;
+import com.msvc.cliente.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

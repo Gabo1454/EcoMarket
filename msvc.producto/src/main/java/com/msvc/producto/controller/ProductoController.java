@@ -1,7 +1,7 @@
 package com.msvc.producto.controller;
 
 import com.msvc.producto.models.entities.Producto;
-import com.msvc.producto.service.ProductoService;
+import com.msvc.producto.services.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
-package com.msvc.cliente.services;
+package com.msvc.cliente.service;
 
-import com.msvc.cliente.exception.ClienteException;
+import com.msvc.cliente.exceptions.ClienteException;
 import com.msvc.cliente.models.entities.Cliente;
 import com.msvc.cliente.repositories.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;

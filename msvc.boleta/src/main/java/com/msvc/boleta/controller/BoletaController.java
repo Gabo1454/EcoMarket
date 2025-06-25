@@ -10,6 +10,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.CollectionModel;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import java.util.stream.Collectors;
+
+
 @RestController
 @RequestMapping("/api/v1/boletas") // Puedes ajustar este path base si es necesario
 public class BoletaController {
@@ -24,18 +30,45 @@ public class BoletaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Boleta>> getAll() {
-        return ResponseEntity.ok(boletaService.findAll());
+    public ResponseEntity<CollectionModel<EntityModel<Boleta>>> getAll() {
+        List<EntityModel<Boleta>> boletas = boletaService.findAll().stream()
+                .map(b -> EntityModel.of(b,
+                        linkTo(methodOn(BoletaController.class).getById(b.getIdBoleta())).withSelfRel(),
+                        linkTo(methodOn(BoletaController.class).getCompleteBoleta(b.getIdBoleta())).withRel("detalle-completo")
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(
+                CollectionModel.of(boletas,
+                        linkTo(methodOn(BoletaController.class).getAll()).withSelfRel())
+        );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Boleta> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(boletaService.findById(id));
+    public ResponseEntity<EntityModel<Boleta>> getById(@PathVariable Long id) {
+        Boleta boleta = boletaService.findById(id);
+
+        EntityModel<Boleta> recurso = EntityModel.of(boleta,
+                linkTo(methodOn(BoletaController.class).getById(id)).withSelfRel(),
+                linkTo(methodOn(BoletaController.class).getAll()).withRel("todas-las-boletas"),
+                linkTo(methodOn(BoletaController.class).getCompleteBoleta(id)).withRel("detalle-completo"),
+                linkTo(methodOn(BoletaController.class).delete(id)).withRel("eliminar"),
+                linkTo(methodOn(BoletaController.class).update(id, boleta)).withRel("actualizar")
+        );
+
+        return ResponseEntity.ok(recurso);
     }
 
     @PostMapping
-    public ResponseEntity<Boleta> create(@RequestBody Boleta boleta) {
-        return ResponseEntity.ok(boletaService.save(boleta));
+    public ResponseEntity<EntityModel<Boleta>> create(@RequestBody Boleta boleta) {
+        Boleta creada = boletaService.save(boleta);
+
+        EntityModel<Boleta> recurso = EntityModel.of(creada,
+                linkTo(methodOn(BoletaController.class).getById(creada.getIdBoleta())).withSelfRel(),
+                linkTo(methodOn(BoletaController.class).getAll()).withRel("todas-las-boletas")
+        );
+
+        return ResponseEntity.created(linkTo(methodOn(BoletaController.class).getById(creada.getIdBoleta())).toUri()).body(recurso);
     }
 
     @PutMapping("/{id}")

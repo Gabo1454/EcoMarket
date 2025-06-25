@@ -1,4 +1,4 @@
-package com.msvc.cliente.services;
+package com.msvc.cliente.service;
 
 import com.msvc.cliente.models.entities.Cliente;
 import org.springframework.stereotype.Service;
