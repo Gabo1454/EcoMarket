@@ -19,12 +19,12 @@ public class BoletaRepositoryTest {
 
     @Test
     void guardarYBuscarBoleta() {
-        Boleta boleta = new Boleta(null, 1L, LocalDate.now(), 5000.0);
+        Boleta boleta = new Boleta(null, 1, LocalDate.now(), 5000);
         Boleta guardada = boletaRepository.save(boleta);
 
         Optional<Boleta> encontrada = boletaRepository.findById(guardada.getIdBoleta());
 
         assertThat(encontrada).isPresent();
-        assertThat(encontrada.get().getTotal()).isEqualTo(5000.0);
+        assertThat(encontrada.get().getTotal()).isEqualTo(5000);
     }
 }

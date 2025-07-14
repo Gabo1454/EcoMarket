@@ -10,23 +10,26 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "boletas")
-@Getter @Setter @ToString
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class Boleta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_boleta") // anotacion para JPA
     private Long idBoleta;
 
-    @NotNull(message = "Debe incluir id Cliente")
-    private Long idCliente;
+    @Column(nullable = false, name = "descripcion_boleta")
+    private String descripcionBoleta;
+
+    @Column(nullable = false, name = "id_cliente_pojo")
+    private Long idClientePojo;
 
     @NotNull(message = "Debe incluir la fecha de la boleta")
     private LocalDate fechaBoleta;
 
     @NotNull(message = "Debe calcularse el total")
     private Double total;
-
 }

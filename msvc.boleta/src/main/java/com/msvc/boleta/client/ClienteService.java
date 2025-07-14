@@ -1,18 +1,19 @@
 package com.msvc.boleta.client;
 
-import com.msvc.boleta.models.Cliente;
+import com.msvc.boleta.dto.ClienteResponseDTO;
+import com.msvc.boleta.models.ClientePojo;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ClienteService {
 
-    private final ClienteClient clienteClient;
+    private final ClienteClientRest clienteClientRest;
 
-    public ClienteService(ClienteClient clienteClient) {
-        this.clienteClient = clienteClient;
+    public ClienteService(ClienteClientRest clienteClientRest) {
+        this.clienteClientRest = clienteClientRest;
     }
 
-    public Cliente obtenerClientePorId(Long id) {
-        return clienteClient.obtenerClientePorId(id);
+    public ClienteResponseDTO findClienteById(Long id) {
+        return clienteClientRest.findClienteById(id);
     }
 }
