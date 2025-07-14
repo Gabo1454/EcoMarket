@@ -1,12 +1,12 @@
 package com.msvc.cliente.service;
 
+import com.github.javafaker.Faker;
 import com.msvc.cliente.clients.BoletaClientRest;
 import com.msvc.cliente.dtos.ClienteCreationDTO;
+import com.msvc.cliente.dtos.ClienteEstadoDTO;
 import com.msvc.cliente.exceptions.ClienteException;
 import com.msvc.cliente.models.entities.Cliente;
 import com.msvc.cliente.repositories.ClienteRepository;
-import net.datafaker.Faker;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,8 +40,7 @@ public class ClienteServiceTest {
     @Mock
     private BoletaClientRest boletaClientRest;
 
-    // Le ordenamos a Moclito que cree una instancia clienteService
-    // e inyecte los mocks de arriba.
+    // Le ordenamos a Moclito que cree una instancia clienteService, inyecte los mocks de arriba.
     @InjectMocks
     private ClienteServiceImpl clienteService;
 
@@ -75,11 +74,11 @@ public class ClienteServiceTest {
     void debeCrearClienteCuandoNoExisteDuplicado() {
 
         ClienteCreationDTO dto = new ClienteCreationDTO();
-        dto.setNombreCliente("Juan");
-        dto.setApellidoCliente("Pérez");
-        dto.setCorreoCliente("juan@example.com");
+        dto.setNombreCliente("Matias");
+        dto.setApellidoCliente("Perez");
+        dto.setCorreoCliente("Mati@example.com");
         dto.setContraseniaCliente("123456");
-        dto.setDireccionEnvioCliente("Calle Falsa 123");
+        dto.setDireccionEnvioCliente("Calle siempreviva 123");
 
         when(clienteRepository.existsByCorreoClienteAndContraseniaCliente(
                 dto.getCorreoCliente(), dto.getContraseniaCliente()))
@@ -87,21 +86,21 @@ public class ClienteServiceTest {
 
         Cliente clienteGuardado = new Cliente();
         clienteGuardado.setIdUsuario(1L);
-        clienteGuardado.setNombreCliente("Juan");
-        clienteGuardado.setApellidoCliente("Pérez");
-        clienteGuardado.setCorreoCliente("juan@example.com");
+        clienteGuardado.setNombreCliente("Matias");
+        clienteGuardado.setApellidoCliente("Perez");
+        clienteGuardado.setCorreoCliente("mati@example.com");
         clienteGuardado.setContraseniaCliente("123456");
-        clienteGuardado.setDireccionEnvioCliente("Calle Falsa 123");
+        clienteGuardado.setDireccionEnvioCliente("Calle siempreviva 123");
         clienteGuardado.setActivo(true);
 
         when(clienteRepository.save(any(Cliente.class))).thenReturn(clienteGuardado);
 
-        Cliente resultado = clienteService.crearCliente(dto);
+        Cliente resultado = clienteService.save(dto);
 
         assertNotNull(resultado);
-        assertEquals("Juan", resultado.getNombreCliente());
-        assertEquals("Pérez", resultado.getApellidoCliente());
-        assertEquals("juan@example.com", resultado.getCorreoCliente());
+        assertEquals("Matias", resultado.getNombreCliente());
+        assertEquals("Perez", resultado.getApellidoCliente());
+        assertEquals("mati@example.com", resultado.getCorreoCliente());
 
         verify(clienteRepository, times(1)).existsByCorreoClienteAndContraseniaCliente(anyString(), anyString());
         verify(clienteRepository, times(1)).save(any(Cliente.class));
@@ -111,7 +110,7 @@ public class ClienteServiceTest {
     @DisplayName("Devuelve todos los clientes")
     public void debeListarTodosLosClientes(){
         when(clienteRepository.findAll()).thenReturn(this.clienteList);
-        List<Cliente> resultado = clienteService.traerTodos();
+        List<Cliente> resultado = clienteService.findAll();
         assertThat(resultado).hasSize(100);
         assertThat(resultado).contains(this.clientePrueba);
 
@@ -124,7 +123,7 @@ public class ClienteServiceTest {
     @DisplayName("Lanza una excepcion si no hay ningun cliente")
     public void lanzaExcepcionSiNoHayNingunCliente(){
         when(clienteRepository.findAll()).thenReturn(new ArrayList<>());
-        assertThatThrownBy(()->clienteService.traerTodos())
+        assertThatThrownBy(()->clienteService.findAll())
                 .isInstanceOf(ClienteException.class)
                 .hasMessageContaining("No hay clientes registrados");
 
@@ -136,7 +135,7 @@ public class ClienteServiceTest {
     @DisplayName("Encontrar por id un cliente")
     public void debeEncontrarPorIdUnCliente(){
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(clientePrueba));
-        Cliente resultado = clienteService.traerPorId(1L);
+        Cliente resultado = clienteService.findById(1L);
         assertThat(resultado).isNotNull();
         assertThat(resultado).isEqualTo(this.clientePrueba);
 
@@ -148,7 +147,7 @@ public class ClienteServiceTest {
     public void lanzarUnaExcepcionSiElIdNoExiste(){
         Long idInexistente = 999L;
         when(clienteRepository.findById(idInexistente)).thenReturn(Optional.empty());
-        assertThatThrownBy(() -> clienteService.traerPorId(idInexistente))
+        assertThatThrownBy(() -> clienteService.findById(idInexistente))
                 .isInstanceOf(ClienteException.class)
                 .hasMessageContaining("Cliente con id " + idInexistente + " no encontrado");
 
@@ -171,7 +170,7 @@ public class ClienteServiceTest {
         //Responde devolviendo exactamente el mismo el mismo objeto que se paso como argumento
         when(clienteRepository.save(any(Cliente.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        Cliente resultado = clienteService.actualizarCliente(1L, nuevosDatos);
+        Cliente resultado = clienteService.updateCliente(1L, nuevosDatos);
 
         assertThat(resultado.getNombreCliente()).isEqualTo(nuevosDatos.getNombreCliente());
         assertThat(resultado.getApellidoCliente()).isEqualTo(nuevosDatos.getApellidoCliente());
@@ -191,12 +190,8 @@ public class ClienteServiceTest {
 
         when(clienteRepository.findById(idInexistente)).thenReturn(Optional.empty());
 
-
-        /*Aca se valida que cuando se intenta actualizar un cliente que no existe, el servicio
-         * Lanza una excepcion.
-         * Da un mensaje que incluye el id del cliente no encontrado.
-         * */
-        assertThatThrownBy(() -> clienteService.actualizarCliente(idInexistente, nuevosDatos))
+        //Se valida que al intentar actualizar un cliente que no existe se lanza una excepcion
+        assertThatThrownBy(() -> clienteService.updateCliente(idInexistente, nuevosDatos))
                 .isInstanceOf(ClienteException.class)
                 .hasMessageContaining("Cliente con id 999 no encontrado");
 
@@ -252,7 +247,7 @@ public class ClienteServiceTest {
 
         when(clienteRepository.findById(1L)).thenReturn(Optional.of(clientePrueba));
 
-        clienteService.eliminarCliente(1L);
+        clienteService.deleteById(1L);
 
         verify(clienteRepository, times(1)).findById(1L);
         verify(clienteRepository, times(1)).deleteById(1L);
@@ -264,7 +259,7 @@ public class ClienteServiceTest {
         Long idInexistente = 999L;
         when(clienteRepository.findById(idInexistente)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> clienteService.eliminarCliente(idInexistente))
+        assertThatThrownBy(() -> clienteService.deleteById(idInexistente))
                 .isInstanceOf(ClienteException.class)
                 .hasMessageContaining("Cliente con id 999 no encontrado");
 

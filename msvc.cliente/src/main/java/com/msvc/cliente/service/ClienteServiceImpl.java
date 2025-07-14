@@ -1,6 +1,7 @@
 package com.msvc.cliente.service;
 
 import com.msvc.cliente.dtos.ClienteCreationDTO;
+import com.msvc.cliente.dtos.ClienteEstadoDTO;
 import com.msvc.cliente.exceptions.ClienteException;
 import com.msvc.cliente.models.entities.Cliente;
 import com.msvc.cliente.repositories.ClienteRepository;
@@ -28,7 +29,7 @@ public class ClienteServiceImpl implements ClienteService {
      */
     @Transactional
     @Override
-    public Cliente crearCliente(ClienteCreationDTO clienteDetails) {
+    public Cliente save(ClienteCreationDTO clienteDetails) {
 
         boolean existe = clienteRepository.existsByCorreoClienteAndContraseniaCliente(
                 clienteDetails.getCorreoCliente(), clienteDetails.getContraseniaCliente());
@@ -55,7 +56,7 @@ public class ClienteServiceImpl implements ClienteService {
      */
     @Transactional(readOnly = true)
     @Override
-    public List<Cliente> traerTodos() {
+    public List<Cliente> findAll() {
 
         List<Cliente> clientes = clienteRepository.findAll();
 
@@ -67,30 +68,24 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     /**
-     * Obtiene un elemento Cliente por ID
-     *
-     * @param id ID del Cliente
-     *
      * @return retorna un elemento Cliente con el ID proporcionado
      * @throws ClienteException si el ID del Cliente no existe
      */
     @Transactional(readOnly = true)
     @Override
-    public Cliente traerPorId(Long id) {
+    public Cliente findById(Long id) {
         return clienteRepository.findById(id).orElseThrow(
                 () -> new ClienteException("Cliente con id " + id + " no encontrado")
         );
     }
 
     /**
-     * Actualiza los datos de Cliente por su ID
-     *
      * @param idCliente ID del Cliente
      * @param clienteDetails detalles de Cliente que se usaran para Actuzalizar
      * @throws ClienteException si el ID del Cliente no existe
      */
     @Transactional @Override
-    public Cliente actualizarCliente(Long idCliente, Cliente clienteDetails){
+    public Cliente updateCliente(Long idCliente, Cliente clienteDetails){
         return clienteRepository.findById(idCliente).map(cliente -> {
             cliente.setNombreCliente(clienteDetails.getNombreCliente());
             cliente.setApellidoCliente(clienteDetails.getApellidoCliente());
@@ -108,7 +103,7 @@ public class ClienteServiceImpl implements ClienteService {
      * @throws ClienteException si el ID del Cliente no existe
      */
     @Transactional @Override
-    public void eliminarCliente(Long id){
+    public void deleteById(Long id){
 
         Optional<Cliente> clienteOptional = clienteRepository.findById(id);
 
@@ -136,5 +131,4 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
 
-}
 }

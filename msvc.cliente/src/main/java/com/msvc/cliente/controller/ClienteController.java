@@ -1,9 +1,13 @@
 package com.msvc.cliente.controller;
 
+import com.msvc.cliente.dtos.ClienteCreationDTO;
+import com.msvc.cliente.dtos.ClienteEstadoDTO;
 import com.msvc.cliente.dtos.ErrorDTO;
 import com.msvc.cliente.models.entities.Cliente;
 import com.msvc.cliente.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -66,10 +70,10 @@ public class ClienteController {
                     schema = @Schema(implementation = ClienteCreationDTO.class)
             )
     )
-    public ResponseEntity<Cliente> crearCliente(@Valid @RequestBody ClienteCreationDTO clienteCreationDTO){
+    public ResponseEntity<Cliente> crearCliente(@Valid @RequestBody ClienteCreationDTO clienteCreationDTO) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(clienteService.crearCliente(clienteCreationDTO));
+                .body(clienteService.save(clienteCreationDTO));
     }
 
     @GetMapping
@@ -87,7 +91,7 @@ public class ClienteController {
     public ResponseEntity<List<Cliente>> traerTodos() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(clienteService.traerTodos());
+                .body(clienteService.findAll());
     }
 
     @GetMapping("/{id}")
@@ -116,10 +120,10 @@ public class ClienteController {
                     required = true
             )
     })
-    public ResponseEntity<Cliente> traerCliente(@PathVariable Long id){
+    public ResponseEntity<Cliente> traerCliente(@PathVariable Long id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(clienteService.traerPorId(id));
+                .body(clienteService.findById(id));
     }
 
     @PutMapping("/{id}")
@@ -164,13 +168,12 @@ public class ClienteController {
                     schema = @Schema(implementation = ClienteCreationDTO.class)
             )
     )
-    public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente cliente){
+    public ResponseEntity<Cliente> actualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente cliente) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(clienteService.actualizarCliente(id, cliente));
+                .body(clienteService.updateCliente(id, cliente));
     }
 
-    @PutMapping("/estado/{id}")
     @Operation(
             summary = "Endpoint que actualiza el estado de un cliente por id",
             description = "Endpoint que va a actualizar el parametro de estado de un cliente " +
@@ -203,43 +206,11 @@ public class ClienteController {
                     schema = @Schema(implementation = ClienteEstadoDTO.class)
             )
     )
-    public ResponseEntity<Cliente> actualizarEstadoCliente(@PathVariable Long id, @Valid @RequestBody ClienteEstadoDTO clienteEstadoDetails){
+    @PutMapping({"/estado/{id}", "/estado/{id}"})
+    public ResponseEntity<Cliente> actualizarEstadoCliente(@PathVariable Long id, @Valid @RequestBody ClienteEstadoDTO clienteEstadoDetails) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(clienteService.actualizarEstadoCliente(id, clienteEstadoDetails));
     }
 
-    @DeleteMapping("/{id}")
-    @Operation(
-            summary = "Endpoint que elimina un cliente por ID",
-            description = "Endpoint que va a eliminar un cliente al momento de " +
-                    "buscarlo por ID"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "204",
-                    description = "Cliente eliminado correctamente (sin contenido de respuesta)"
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Cliente no encontrado con el ID indicado",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = ErrorDTO.class)
-                    )
-            )
-    })
-    @Parameters(value = {
-            @Parameter(
-                    name = "id",
-                    description = "Primary Key - Entidad Cliente",
-                    required = true
-            )
-    })
-    public ResponseEntity<Void> eliminarCliente(@PathVariable Long id){
-        clienteService.eliminarCliente(id);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
-    }
 }

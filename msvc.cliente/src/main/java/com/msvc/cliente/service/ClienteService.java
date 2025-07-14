@@ -13,8 +13,8 @@ public interface ClienteService {
     List<Cliente> findAll();
     Cliente findById(Long id);
     Cliente save(ClienteCreationDTO clienteDetails);
-    Cliente update(Long id, Cliente cliente);
+    Cliente updateCliente(Long id, Cliente cliente);
     void deleteById(Long id);
-    Cliente actualizarEstadoCliente(Long id, ClienteEstadoDTO clienteEstadoDetails);
+    Cliente actualizarEstadoCliente(Long id, ClienteEstadoDTO clienteDetails);
 
 }

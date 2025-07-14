@@ -8,6 +8,9 @@ import lombok.*;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Random;
+
+@Data
 @Entity
 @Table(name = "clientes")
 @Getter @Setter @ToString @NoArgsConstructor @AllArgsConstructor
@@ -34,4 +37,8 @@ public class Cliente {
 
     @Column(nullable = false)
     private Boolean activo = true;
+
+    @Column(nullable = false, name = "telefono_cliente")
+    private String telefonoCliente;
+
 }

@@ -1,10 +1,13 @@
 package com.msvc.cliente.controller;
 
 import com.msvc.cliente.assembler.ClienteModelAssembler;
+import com.msvc.cliente.dtos.ClienteCreationDTO;
+import com.msvc.cliente.dtos.ClienteEstadoDTO;
 import com.msvc.cliente.dtos.ErrorDTO;
 import com.msvc.cliente.models.entities.Cliente;
 import com.msvc.cliente.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,6 +26,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("api/v2/clientes")
@@ -78,7 +84,7 @@ public class ClienteControllerV2 {
             )
     )
     public ResponseEntity<EntityModel<Cliente>> crearCliente(@Valid @RequestBody ClienteCreationDTO clienteCreationDTO){
-        Cliente clienteNew = this.clienteService.crearCliente(clienteCreationDTO);
+        Cliente clienteNew = this.clienteService.save(clienteCreationDTO);
         EntityModel<Cliente> entityModel = this.clienteModelAssembler.toModel(clienteNew);
         return ResponseEntity
                 .created(linkTo(methodOn(ClienteControllerV2.class).traerCliente(clienteNew.getIdUsuario())).toUri())
@@ -103,7 +109,7 @@ public class ClienteControllerV2 {
     })
     public ResponseEntity<CollectionModel<EntityModel<Cliente>>> traerTodos() {
 
-        List<EntityModel<Cliente>> entityModels = this.clienteService.traerTodos()
+        List<EntityModel<Cliente>> entityModels = this.clienteService.findAll()
                 .stream()
                 .map(clienteModelAssembler::toModel)
                 .toList();
@@ -150,7 +156,7 @@ public class ClienteControllerV2 {
     })
     public ResponseEntity<EntityModel<Cliente>> traerCliente(@PathVariable Long id){
         EntityModel<Cliente> entityModel = this.clienteModelAssembler.toModel(
-                this.clienteService.traerPorId(id)
+                this.clienteService.findById(id)
         );
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -207,7 +213,7 @@ public class ClienteControllerV2 {
     )
     public ResponseEntity<EntityModel<Cliente>> actualizarCliente(@PathVariable Long id, @Valid @RequestBody Cliente cliente){
 
-        Cliente clienteActualizado = this.clienteService.actualizarCliente(id, cliente);
+        Cliente clienteActualizado = this.clienteService.updateCliente(id, cliente);
         EntityModel<Cliente> entityModel = this.clienteModelAssembler.toModel(clienteActualizado);
 
         return ResponseEntity
@@ -291,7 +297,7 @@ public class ClienteControllerV2 {
             )
     })
     public ResponseEntity<Void> eliminarCliente(@PathVariable Long id){
-        clienteService.eliminarCliente(id);
+        clienteService.deleteById(id);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();

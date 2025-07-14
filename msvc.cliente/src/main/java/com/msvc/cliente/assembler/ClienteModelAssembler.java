@@ -1,5 +1,6 @@
 package com.msvc.cliente.assembler;
 
+import com.msvc.cliente.controller.ClienteControllerV2;
 import com.msvc.cliente.models.entities.Cliente;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.stereotype.Component;

@@ -1,11 +1,11 @@
 package com.msvc.cliente.config;
 
+import com.github.javafaker.Faker;
 import com.msvc.cliente.models.entities.Cliente;
 import com.msvc.cliente.repositories.ClienteRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
-import net.datafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,17 +38,14 @@ public class LoadDatabase implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
-        //Borrar todos los clientes existentes y reiniciar la columna id a 1
-        //clienteRepository.deleteAll();
-        //logger.info("Todos los clientes anteriores han sido eliminados.");
-        //em.createNativeQuery("ALTER TABLE clientes ALTER COLUMN id_cliente RESTART WITH 1").executeUpdate();
-
         if(clienteRepository.count()==0){
             for(int i=0;i<100;i++){
                 Cliente cliente = new Cliente();
 
-                cliente.setNombre(faker.name().firstName()); // Nombre aleatorio
-                cliente.setTelefono(generarTelefonoPersonalizado());
+                cliente.setNombreCliente(faker.name().firstName()); // Todo aleatorio
+                cliente.setApellidoCliente(faker.name().lastName()); //
+                cliente.setCorreoCliente(generarMailPersonalizado());
+                cliente.setTelefonoCliente(faker.phoneNumber().cellPhone());
                 cliente.setContraseniaCliente(faker.internet().password(8, 16, true, true, true));
                 cliente.setDireccionEnvioCliente(faker.address().fullAddress());
                 logger.info("El nombre que agregas es {}", cliente.getNombreCliente());
