@@ -5,27 +5,33 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-@Entity //Indica que la clase es una entidad JPA, osea una tabla de base de datos spring/jpa. Se usa para mapear objetos JAVA a registros en la tabla cliente
-@Table(name="clientes") //Define el nombre real de la tabla en la base de datos
-@Getter @Setter @ToString //Genera automáticamente los métodos get y set para todos los atributos.
-@NoArgsConstructor //Crea un constructor vacío (sin parámetros). Necesario para que JPA pueda crear objetos.
-@AllArgsConstructor //Crea un constructor con todos los atributos como parámetros.
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "clientes")
+@Getter @Setter @ToString @NoArgsConstructor @AllArgsConstructor
 public class Cliente {
-    @Id //Marca el campo como clave primaria
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //Indica que el valor del ID se autogenera en la BD
-    private long idCliente;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_cliente")
+    private Long idUsuario;
 
-    @NotBlank(message = "El campo rut esta vacio " )
-    @Pattern(regexp = "^\\d{7,8}-[\\dkK]$", message = "El RUT debe tener un formato válido, EJ XXXXXXXX-X")
-    @Column (nullable = false, unique = true)
-    private String rut;
+    @Column(nullable = false, name = "nombre_cliente")
+    private String nombreCliente;
 
-    @NotBlank(message = "El campo nombre no puede estar vacio")
-    @Column (nullable = false)
-    private String nombre;
+    @Column(nullable = false, name = "apellido_cliente")
+    private String apellidoCliente;
 
-    @NotBlank(message = "El teléfono no puede estar vacío")
-    @Pattern(regexp = "^\\+?\\d{9,15}$", message = "Formato de teléfono inválido. Ej: +56912345678")
-    @Column(nullable = false, length = 15)
-    private String telefono;
+    @Column(nullable = false, unique = true, name = "correo_cliente")
+    private String correoCliente;
+
+    @Column(nullable = false, unique = true, name = "contrasenia_cliente")
+    private String contraseniaCliente;
+
+    @Column(nullable = false, name = "direccion_envio_cliente")
+    private String direccionEnvioCliente;
+
+    @Column(nullable = false)
+    private Boolean activo = true;
 }
